@@ -12,6 +12,19 @@ sys.path.insert(0, parent_dir)
 
 from application.app import app, get_country_city_data, get_stations_by_country
 
+Google_Maps_API_Key = 'AIzaSyAWn6u1KkmmuExBHMGNUuyKe4BgFsGHgq4' # Här anges api nyckeln för våran google maps API
+
+def test_google_maps_api_status():
+    '''Denna test case kollar om google maps API är tillgänglig'''
+    base_url = 'https://maps.googleapis.com/maps/api/geocode/json'
+    params = {
+        'address': 'New+York',
+        'key': Google_Maps_API_Key
+    }
+
+    response = requests.get(base_url, params=params) # Här skapas en get request till våran API med våra parametrar
+    assert response.status_code == 200, "Google maps is not reachable at the moment"
+
 def test_Is_online_index():
     '''Här görs en request.get fär att kolla om våran endpoint är funktionell'''
     assert requests.get("http://127.0.0.1:5000", timeout=10)
@@ -26,7 +39,7 @@ def test_url_up_and_running():
             pytest.fail("Failed to connect to the URL")
 
 def test_file_structure():
-    '''Denna test_case kollar filstrukturer och kollar om den stämmer'''
+    '''Denna test case kollar filstrukturer och kollar om den stämmer'''
     assert "application" in os.listdir(os.curdir)
    # assert "docs" in os.listdir(os.curdir)
     assert "tests" in os.listdir(os.curdir)
