@@ -46,7 +46,7 @@
                 <select name="country" id="country" class="form-control">
                     <option value="All Countries">Choose Country</option>
                     {% for country in countries %}
-                        <option value="{{ country }}">{{ country }}</option>
+                        <option value="{{ country }}" {% if country == selected_country %}selected{% endif %}>{{ country }}</option>
                     {% endfor %}
                 </select>
             </div>
