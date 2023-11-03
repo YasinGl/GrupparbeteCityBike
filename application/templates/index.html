@@ -2,14 +2,18 @@
 <html>
 <head>
     <title>CityBikes API Demo</title>
+    <!-- Lägger till Google Maps API-skriptet med din API-nyckel -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWn6u1KkmmuExBHMGNUuyKe4BgFsGHgq4&center"></script>
+    <!-- Lägger till Bootstrap CSS-stilfilen -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
     <style>
+        /*Ger instruktioner som säger hur kartans fönster på webbsidan ska se ut*/
         .map-container {
             width: 100%;
             height: 400px;
         }
+        /*ställer in bakgrundsvideon på webbsidan och ser till att den täcker hela sidan.*/
          #video-background {
             position: fixed;
             top: 0;
@@ -19,27 +23,29 @@
             z-index: -1;
             object-fit: cover; /* Se till att videon täcker hela vyporten */
         }
-
-        #content-container {
-            position: relative;
-            z-index: 1;
-        }
-
+     
         .container {
-            background-color: rgba(255, 255, 255, 0.8); /* Lägg till en halvgenomskinlig bakgrund för bättre läsbarhet */
+            /*Används för att sätta den vita/lite genomskinliga bakgrunden för det specifika området*/
+            background-color: rgba(255, 255, 255, 0.8); 
             padding: 20px;
             border-radius: 10px;
         }
     </style>
 </head>
 <body>
+    <!--Sätter videon i bakgrunden till muted och i en oendlig loop.
+        Den kommer också att spelas automatiskt när webbsidan öppnas -->
     <video id="video-background" autoplay loop muted>
         <source src="static/images/yasinvideo.mp4" type="video/mp4">
-        Din webbläsare stöder inte videomärket.
+        Din webbläsare stöder inte videomärket. <!--Visas om webbläsaren inte kan spela videon-->
     </video>
+    <!--Skriver ut rubriken CityBikes API Demo -->
     <div class="container">
         <h1 class="mt-5">CityBikes API Demo</h1>
 
+        <!--Använder HTTP-metoden "POST" för att skicka data 
+        Skapar ett formulär som låter användaren välja ett land från en rullgardinslista och skicka det valda landet
+         till servern när knappen "Get Stations" klickas på-->
         <form method="POST" class="mt-3">
             <div class="form-group">
                 <label for="country">Choose a Country:</label>
@@ -53,6 +59,7 @@
             <button type="submit" class="btn btn-primary">Get Stations</button>
         </form>
 
+        <!--Skapar och visar tabellen med rubriker för vilket typ av företag, stad m.m på webbsidan-->
         <table class="table table-striped table-hover mt-4">
             <thead>
                 <tr>
@@ -64,6 +71,8 @@
                 </tr>
             </thead>
             <tbody>
+                <!--Används för att fylla i information i tabellen under rubrikerna på webbsidan, 
+                    om inget data hittas visas "No stations found"-->
                 {% if stations %}
                     {% for station in stations %}
                         <tr>
@@ -72,6 +81,7 @@
                             <td>{{ station.location.latitude }}</td>
                             <td>{{ station.location.longitude }}</td>
                             <td>
+                                <!-- knappen som användaren kan klicka på för att visa en karta för den specifika stationen. -->
                                 <button class="btn btn-primary view-map" data-lat="{{ station.location.latitude }}" data-lng="{{ station.location.longitude }}">Show Map</button>
                             </td>
                         </tr>
@@ -85,6 +95,8 @@
         </table>
     </div>
 
+    <!--Skapar en behållare för att visa kartan på webbsidan och inkluderar de nödvändiga 
+        JavaScript-biblioteken för att göra webbsidan mer funktionell och med en bättre design-->
     <div id="map-container" class="map-container">
     </div>
 
@@ -93,18 +105,25 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
+        /*Gör det möjligt för användaren att klicka på en "Show Map" -knapp för en specifik station.
+        när användaren gör det, öppnas en Google Maps-karta med en markör/pinpoint som visar den valda stationens plats. */
+
+        /*När användaren klickar på  "view-map", hämtar den latitud- och longitudkoordinaterna för den
+         specifika stationen och skapar en objekt med dessa koordinater.*/
         $(document).ready(function() {
             $('.view-map').on('click', function() {
                 var latitude = $(this).data('lat');
                 var longitude = $(this).data('lng');
                 var stationLocation = { lat: latitude, lng: longitude };
-
+                
+                /*visar Google Maps-karta med en zoomnivå på 18, centrerad runt en specifik plats,
+                 och med satellitbildstyp*/
                 var map = new google.maps.Map(document.getElementById('map-container'), {
                     zoom: 18,
                     center: stationLocation,
                     mapTypeId: 'satellite'
                 });
-
+                /*Placerar markören/pinpoint på Google Maps-kartan*/
                 var marker = new google.maps.Marker({
                     position: stationLocation,
                     map: map
